@@ -10,11 +10,6 @@ namespace Marker.Tests
 {
     public class MarkdownSerializerTests
     {
-        private readonly ITestOutputHelper output;
-
-        public MarkdownSerializerTests(ITestOutputHelper output) {
-            this.output = output;
-        }
 
         [Fact]
         public void SerializeTest()
@@ -24,7 +19,7 @@ namespace Marker.Tests
             {
                 Fixture fixture = new Fixture();
                 MarkdownSerializer markdownSerializer = new MarkdownSerializer();
-                Document mockDoc = fixture.Create<Document>();
+                MockDoc mockDoc = fixture.Create<MockDoc>();
                 TextWriter writer = new StreamWriter(assertionStream);
                 markdownSerializer.Serialize(mockDoc, outputStream);
                 writer.WriteLine(Markdown.FrontmatterDelimiter);
@@ -38,15 +33,5 @@ namespace Marker.Tests
             }
         }
 
-        public class Document {
-            [Frontmatter]
-            public string Title { get; set; }
-            [Frontmatter]
-            public string Author { get; set; }
-            [Frontmatter]
-            public DateTime Date { get; set; }
-            [Content]
-            public String Content { get; set; }
-        }
     }
 }
