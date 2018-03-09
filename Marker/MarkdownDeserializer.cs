@@ -29,7 +29,7 @@ namespace Marker {
             }
         }
 
-        public Object Deserialize(Stream stream) {
+        public T Deserialize(Stream stream) {
             Object obj = Activator.CreateInstance(typeof(T));
             StringBuilder sb = new StringBuilder();
             StreamReader reader = new StreamReader(stream);
@@ -40,10 +40,10 @@ namespace Marker {
                 sb.Append(line);
                 sb.Append(reader.ReadToEnd());
                 ContentProperty.SetValue(obj, sb.ToString());
-                return obj;
+                return (T)obj;
             }
             ContentProperty.SetValue(obj, reader.ReadToEnd());
-            return obj;
+            return (T)obj;
         }
 
         public void ReadFrontmatter(ref Object obj, StreamReader reader) {

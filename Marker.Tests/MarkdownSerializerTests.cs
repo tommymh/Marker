@@ -23,7 +23,7 @@ namespace Marker.Tests
             using (MemoryStream assertionStream = new MemoryStream())
             {
                 Fixture fixture = new Fixture();
-                MarkdownSerializer<Document> markdownSerializer = new MarkdownSerializer<Document>();
+                MarkdownSerializer markdownSerializer = new MarkdownSerializer();
                 Document mockDoc = fixture.Create<Document>();
                 TextWriter writer = new StreamWriter(assertionStream);
                 markdownSerializer.Serialize(mockDoc, outputStream);

@@ -6,16 +6,16 @@ using System.Reflection;
 
 namespace Marker
 {
-    public class MarkdownSerializer<T>
+    public class MarkdownSerializer
     {
         private List<PropertyInfo> ContentProperties;
         private List<PropertyInfo> FrontmatterProperties;
-
-        public MarkdownSerializer()
-        {
+        
+        public MarkdownSerializer() { }        
+        public void EnumerateProperties(Object obj) {
             ContentProperties = new List<PropertyInfo>();
             FrontmatterProperties = new List<PropertyInfo>();
-            var type = typeof(T);
+            var type = obj.GetType();
             var properties = type.GetProperties();
             foreach (var property in properties)
             {
@@ -30,8 +30,9 @@ namespace Marker
             }
         }
 
-        public void Serialize(T obj, Stream stream)
+        public void Serialize(Object obj, Stream stream)
         {
+            this.EnumerateProperties(obj);
             StreamWriter writer = new StreamWriter(stream);
             writer.WriteLine(Markdown.FrontmatterDelimiter);
             foreach (var property in this.FrontmatterProperties)
