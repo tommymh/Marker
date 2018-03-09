@@ -15,12 +15,12 @@ namespace Marker.Tests
         public void SerializeTest()
         {
             using (MemoryStream outputStream = new MemoryStream())
-            using (MemoryStream assertionStream = new MemoryStream())
+            using (MemoryStream comparisonStream = new MemoryStream())
             {
                 Fixture fixture = new Fixture();
                 MarkdownSerializer markdownSerializer = new MarkdownSerializer();
                 MockDoc mockDoc = fixture.Create<MockDoc>();
-                TextWriter writer = new StreamWriter(assertionStream);
+                TextWriter writer = new StreamWriter(comparisonStream);
                 markdownSerializer.Serialize(mockDoc, outputStream);
                 writer.WriteLine(Markdown.FrontmatterDelimiter);
                 writer.WriteLine("{0} : {1}", nameof(mockDoc.Title), mockDoc.Title);
@@ -29,7 +29,7 @@ namespace Marker.Tests
                 writer.WriteLine(Markdown.FrontmatterDelimiter);
                 writer.Write(mockDoc.Content);
                 writer.Flush();
-                Assert.Equal(outputStream.ToArray(),assertionStream.ToArray());
+                Assert.Equal(outputStream.ToArray(),comparisonStream.ToArray());
             }
         }
 
