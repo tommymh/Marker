@@ -3,47 +3,49 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Marker
 {
     public class MarkdownSerializer
     {
-        private List<PropertyInfo> ContentProperties;
-        private List<PropertyInfo> FrontmatterProperties;
-        
-        public MarkdownSerializer() { }        
-        public void EnumerateProperties(Object obj) {
-            ContentProperties = new List<PropertyInfo>();
-            FrontmatterProperties = new List<PropertyInfo>();
+        private IFrontmatterFormatter FrontmatterFormatter;
+        public MarkdownSerializer() {
+            switch(Markdown.FrontmatterFormat) {
+                case Frontmatter.Formats.YAML:
+                break;
+                case Frontmatter.Formats.JSON:
+                this.FrontmatterFormatter = new JsonFormatter();
+                break;
+            } 
+        }        
+        public (string Frontmatter,string Content) SplitObject(Object obj) {
+            IDictionary<string,object> frontmatterProperties = new Dictionary<string,object>();
+            StringBuilder content = new StringBuilder();
             var type = obj.GetType();
             var properties = type.GetProperties();
             foreach (var property in properties)
             {
                 if(Attribute.IsDefined(property, typeof(Frontmatter)))
                 {
-                    FrontmatterProperties.Add(property);
+                    frontmatterProperties.Add(property.Name, property.GetValue(obj));
                 }
                 if(Attribute.IsDefined(property, typeof(Content)))
                 {
-                    ContentProperties.Add(property);
+                    content.Append(property.GetValue(obj));
                 }
             }
+            var frontmatter = this.FrontmatterFormatter.Format(frontmatterProperties);
+            return (frontmatter,content.ToString());
         }
-
         public void Serialize(Object obj, Stream stream)
         {
-            this.EnumerateProperties(obj);
             StreamWriter writer = new StreamWriter(stream);
+            var markdownDocument = SplitObject(obj);
             writer.WriteLine(Markdown.FrontmatterDelimiter);
-            foreach (var property in this.FrontmatterProperties)
-            {
-                writer.WriteLine("{0} : {1}", property.Name, property.GetValue(obj));
-            }
+            writer.WriteLine(markdownDocument.Frontmatter);
             writer.WriteLine(Markdown.FrontmatterDelimiter);
-            foreach (var property in this.ContentProperties)
-            {
-                writer.Write(property.GetValue(obj));
-            }
+            writer.Write(markdownDocument.Content);
             writer.Flush();
         }
     }
