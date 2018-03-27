@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -19,11 +20,13 @@ namespace Marker.Tests
                 Fixture fixture = new Fixture();
                 MarkdownDeserializer<MockDoc> ds = new MarkdownDeserializer<MockDoc>();
                 MockDoc mockDoc = fixture.Create<MockDoc>();
-                TextWriter writer = new StreamWriter(inputStream);
+                StreamWriter writer = new StreamWriter(inputStream);
                 writer.WriteLine(Markdown.FrontmatterDelimiter);
-                writer.WriteLine("{0} : {1}", nameof(mockDoc.Title), mockDoc.Title);
-                writer.WriteLine("{0} : {1}", nameof(mockDoc.Author), mockDoc.Author);
-                writer.WriteLine("{0} : {1}", nameof(mockDoc.Date), mockDoc.Date);
+                writer.WriteLine("{");
+                writer.WriteLine("  \"{0}\": \"{1}\",", nameof(mockDoc.Title), mockDoc.Title);
+                writer.WriteLine("  \"{0}\": \"{1}\",", nameof(mockDoc.Author), mockDoc.Author);
+                writer.WriteLine("  \"{0}\": \"{1}\"", nameof(mockDoc.Date), mockDoc.Date.ToString("o", CultureInfo.InvariantCulture));
+                writer.WriteLine("}");
                 writer.WriteLine(Markdown.FrontmatterDelimiter);
                 writer.Write(mockDoc.Content);
                 writer.Flush();

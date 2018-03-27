@@ -6,10 +6,13 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
+using Newtonsoft.Json;
+
 namespace Marker {
 
     public class MarkdownDeserializer<T> {
         private PropertyInfo ContentProperty;
+        private IFrontmatterParser FrontmatterParser;
         private List<PropertyInfo> FrontmatterProperties;
 
         public MarkdownDeserializer() {
@@ -26,6 +29,13 @@ namespace Marker {
                 {
                     ContentProperty = property;
                 }
+            }
+            switch(Markdown.FrontmatterFormat) {
+                case Frontmatter.Formats.YAML:
+                break;
+                case Frontmatter.Formats.JSON:
+                this.FrontmatterParser = new JsonParser();
+                break;
             }
         }
 
@@ -48,27 +58,26 @@ namespace Marker {
 
         public void ReadFrontmatter(ref Object obj, StreamReader reader) {
             string line;
+            StringBuilder rawFrontmatter = new StringBuilder();
             while((line = reader.ReadLine())  != null) {
                 if(line == Markdown.FrontmatterDelimiter) {
-                    return;
+                    break;
                 }
-                int index = line.IndexOf(" : ");
-                string propertyName = line.Substring(0, index);
-                string propertyValue = line.Substring(index+3);
-                foreach (PropertyInfo property in FrontmatterProperties) {
-                    if(property.Name == propertyName) {
-                        SetProperty(ref obj, property, propertyValue);
-                    }
-                }
+                rawFrontmatter.AppendLine(line);
+            }
+            var frontmatter = this.FrontmatterParser.Parse(rawFrontmatter.ToString());
+            foreach (PropertyInfo property in this.FrontmatterProperties) {
+                if(frontmatter[property.Name] != null)
+                    SetProperty(ref obj, property, frontmatter[property.Name]);
             }
         }
 
-        public void SetProperty(ref Object obj, PropertyInfo property, string value) {
+        public void SetProperty(ref Object obj, PropertyInfo property, object value) {
             if( property.PropertyType == value.GetType()) {
                 property.SetValue(obj, value);
-            } else {
+            } else if(value.GetType() == typeof(string)) {
                 TypeConverter tc = TypeDescriptor.GetConverter(property.PropertyType);
-                property.SetValue(obj, tc.ConvertFromString(value));
+                property.SetValue(obj, tc.ConvertFromString((string)value));
             }
         }
     }
