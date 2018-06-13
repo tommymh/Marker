@@ -56,8 +56,6 @@ namespace Marker.Tests
                 writer.WriteLine(Markdown.FrontmatterDelimiter);
                 writer.Write(mockDoc.Content);
                 writer.Flush();
-                var str = Encoding.ASCII.GetString(outputStream.ToArray());
-                var str2 = Encoding.ASCII.GetString(comparisonStream.ToArray());
                 Assert.Equal(outputStream.ToArray(),comparisonStream.ToArray());
             }
         }
