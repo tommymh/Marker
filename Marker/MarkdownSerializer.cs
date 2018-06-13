@@ -13,6 +13,7 @@ namespace Marker
         public MarkdownSerializer() {
             switch(Markdown.FrontmatterFormat) {
                 case Frontmatter.Formats.YAML:
+                this.FrontmatterFormatter = new YamlFormatter();
                 break;
                 case Frontmatter.Formats.JSON:
                 this.FrontmatterFormatter = new JsonFormatter();
