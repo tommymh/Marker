@@ -5,7 +5,7 @@ namespace Marker
 {
     public static class Markdown
     {
-        public static Frontmatter.Formats FrontmatterFormat { get; set; }
+        public static Frontmatter.Formats FrontmatterFormat { get; set; }  = Frontmatter.Formats.YAML;
         public static string FrontmatterDelimiter { get; set; } = "------";
 
         public static T Deserialize<T>(Stream stream) {
