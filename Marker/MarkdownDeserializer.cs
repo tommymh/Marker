@@ -32,6 +32,7 @@ namespace Marker {
             }
             switch(Markdown.FrontmatterFormat) {
                 case Frontmatter.Formats.YAML:
+                this.FrontmatterParser = new YamlParser();
                 break;
                 case Frontmatter.Formats.JSON:
                 this.FrontmatterParser = new JsonParser();
