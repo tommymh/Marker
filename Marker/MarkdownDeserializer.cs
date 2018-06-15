@@ -37,6 +37,9 @@ namespace Marker {
                 case Frontmatter.Formats.JSON:
                 this.FrontmatterParser = new JsonParser();
                 break;
+                case Frontmatter.Formats.TOML:
+                this.FrontmatterParser = new TomlParser();
+                break;
             }
         }
 

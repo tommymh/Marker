@@ -18,6 +18,9 @@ namespace Marker
                 case Frontmatter.Formats.JSON:
                 this.FrontmatterFormatter = new JsonFormatter();
                 break;
+                case Frontmatter.Formats.TOML:
+                this.FrontmatterFormatter = new TomlFormatter();
+                break;
             } 
         }        
         public (string Frontmatter,string Content) SplitObject(Object obj) {

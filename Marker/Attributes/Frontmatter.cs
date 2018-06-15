@@ -4,6 +4,6 @@ namespace Marker
 {
     public class Frontmatter : Attribute
     {
-        public enum Formats { YAML, JSON }
+        public enum Formats { YAML, JSON, TOML }
     }
 }

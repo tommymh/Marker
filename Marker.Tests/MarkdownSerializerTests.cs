@@ -59,5 +59,30 @@ namespace Marker.Tests
                 Assert.Equal(outputStream.ToArray(),comparisonStream.ToArray());
             }
         }
+
+        [Fact]
+        public void TomlSerializeTest() {
+            using (MemoryStream outputStream = new MemoryStream())
+            using (MemoryStream comparisonStream = new MemoryStream())
+            {
+                Fixture fixture = new Fixture();
+                Markdown.FrontmatterFormat = Frontmatter.Formats.TOML;
+                MarkdownSerializer markdownSerializer = new MarkdownSerializer();
+                MockDoc mockDoc = fixture.Create<MockDoc>();
+                TextWriter writer = new StreamWriter(comparisonStream);
+                markdownSerializer.Serialize(mockDoc, outputStream);
+                writer.WriteLine(Markdown.FrontmatterDelimiter);
+                writer.WriteLine("{0} = \"{1}\"", nameof(mockDoc.Title), mockDoc.Title);
+                writer.WriteLine("{0} = \"{1}\"", nameof(mockDoc.Author), mockDoc.Author);
+                writer.WriteLine("{0} = {1}", nameof(mockDoc.Date), ((DateTimeOffset)mockDoc.Date).ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFK"));
+                writer.Write("\r\n");
+                writer.WriteLine(Markdown.FrontmatterDelimiter);
+                writer.Write(mockDoc.Content);
+                writer.Flush();
+                var str = Encoding.ASCII.GetString(outputStream.ToArray());
+                var str2 = Encoding.ASCII.GetString(comparisonStream.ToArray());
+                Assert.Equal(outputStream.ToArray(),comparisonStream.ToArray());
+            }
+        }
     }
 }
